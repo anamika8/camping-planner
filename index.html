@@ -12,8 +12,9 @@
     
 </head>
 <body>
-    <div class="container">
-        <header id = "heading" role="banner">
+
+    <div class="js-container">
+        <header role="banner">
          <h1>Let's Plan Your Next Camping Trip</h1>
          </header>
         
@@ -21,7 +22,8 @@
         <div class="select-state">
          <label class="js-search-state">              
             <select name="js-search-state" id="search-state-list">
-                    
+                   
+                    <option value="" disabled selected>Select a State</option>
                     <option value="al">Alabama</option>
                     <option value="ak">Alaska</option>
                     <option value="as">American Samoa</option>
@@ -90,16 +92,17 @@
         </div>
         <span class="label">Date</span> 
        <div class="submission">
-            <h2 class="submit-button"> Search  <i class="fa fa-search"></i></h2>
+            <h2 class="search-button"> Search  <i class="fa fa-search"></i></h2>
        </div>
     </form> 
+
         <p id="js-error-message" class="error-message"></p>
         <section id="results" class="hidden">
           <h2>Search results</h2>
           <ul id="results-list">
           </ul>
         </section>
- </div>
+</div>
  <script src="script.js"></script>
 </body>
 </html>
