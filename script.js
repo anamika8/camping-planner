@@ -29,11 +29,12 @@ function handleSearch() {
     const params = {
       stateCode: query,    
       start: '0',
-      apiKey: api_Key.nps
+      fields: 'addresses,fees,operatingHours,contacts',
+      apiKey:(api_Key.nps)
       
     };
     const queryString = formatQueryParams(params)
-    const campURL = hostURL.camp + '?' + queryString;
+    const campURL = (hostURL.camp) + '?' + queryString;
   
     console.log(campURL);
    
@@ -56,22 +57,64 @@ function handleSearch() {
     console.log(responseJson);
     $('#results-list').empty();
 
+   let campinfoList = [];
 
-    for (let i = 0; i < responseJson.data.length; i++){
-      // for each video object in the items 
-      //array, add a list item to the results 
-      //list with the video title, description,
-      //and thumbnail
+   // iterate through the items array
+  for (let i = 0; i < responseJson.data.length; i++){
+    let output = responseJson.data[i];
+      if (output.campsites.totalSites > 0){
+        let campinfo = {};
+        campinfo = {
+          name : output.name,
+          desc : output.description,
+          fee : output.fees,
+          contact : output.contacts,
+          hours: output.operatingHours,
+          address : output.addresses,
+          coordinate : output.latLong   
+        };
 
+    //push the results in output array    
+        campinfoList.push(campinfo);
+      }
+  };
+
+displayInPage(campinfoList);
+getCampAddress(campinfoList); 
+
+};
+
+//display the results in the page
+function displayInPage(campinfoList){
+
+  // display in the UI
+   for(let i=0; i < campinfoList.length; i++) {
+    let campinfo = campinfoList[i];
     $('#results-list').append(
       `<li>
-      <h3>${responseJson.data[i].name}</a></h3>
-      <p>${responseJson.data[i].description}</p>           
+      <h3>${campinfo.name}</a></h3>
+      <p>${campinfo.desc}</p>        
       </li>`
-    )};
-  //display the results section  
+    );
+  }
+ //display the results section  
   $('#results').removeClass('hidden');
-  };
+}
+
+function getCampAddress(campinfoList){
+    //display images
+    for(let i=0; i < campinfoList.length; i++) {
+      let addressJson = {};
+      let campAddress = campinfoList[i].address;
+      for (let j=0; j < campAddress.length; j++){
+        if(campAddress[j].type == "Physical" ){
+          addressJson = campAddress[j];
+          console.log(addressJson.line2 + ', ' + addressJson.line1);
+        }
+      }
+    }
+}
+
 
   function selectedFormdata() {
     const searchState = $('#search-state-list').val();

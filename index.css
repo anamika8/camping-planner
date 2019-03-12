@@ -76,3 +76,19 @@
   .hidden {
     display: none;
   }
+
+  .display-section-one {
+    padding: 20px;
+    background: white;
+    font-size: 16px;
+    line-height: 25px;
+    font-weight: 300;
+    color: black;
+    padding-top: 10px;
+    overflow-wrap: break-word;
+    word-wrap: break-word; 
+  }
+
+  div {
+    display: block;
+}
