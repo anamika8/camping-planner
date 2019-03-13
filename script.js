@@ -32,8 +32,8 @@ getCampingURL(searchState)
     .then(function(responseJson){
      return populateCampingList(responseJson);
     })
-    .then(function(campinfoList){
-     return fetchCampAddress(campinfoList);
+    .then(function(campInfoList){
+     return fetchCampAddress(campInfoList);
     })
     .then(function(responseJson){
       displayResults(responseJson);
@@ -88,8 +88,9 @@ getCampingURL(searchState)
 function isCampsiteEligible(dataValue){
     if ((dataValue.campsites.totalSites > 0 )
       && (dataValue.hasOwnProperty('addresses')) 
-      && (dataValue['addresses'])  //checking the field is not null
-      && (dataValue['addresses'].length > 0)){
+      //checking the field is not null
+      && (((dataValue['addresses']) && (dataValue['addresses'].length > 0)) 
+      || (dataValue['latLong']))) {
           return true;
     } 
     return false;
@@ -98,7 +99,7 @@ function isCampsiteEligible(dataValue){
 /*Populate Camping list values*/
  let populateCampingList = function(responseJson){
     return new Promise(function(resolve,reject) {
-     let campinfoList = [];
+     let campInfoList = [];
  // iterate through the items array
  for (let i = 0; i < responseJson.data.length; i++){
     let output = responseJson.data[i];
@@ -115,30 +116,38 @@ function isCampsiteEligible(dataValue){
         };
         console.log(campinfo);
         //push the results in output array    
-        campinfoList.push(campinfo);
+        campInfoList.push(campinfo);
       }    
   }
-  console.log(campinfoList.length);
-  resolve(campinfoList);
+  
+  resolve(campInfoList);
   
  });
 };
 
 /* fetch the adress value from campinfo object*/
-function fetchCampAddress(campinfoList){
-
+let fetchCampAddress = function(campInfoList){
     return new Promise(function(resolve,reject) {
-        for(let i=0; i < campinfoList.length; i++) {
+      let googleAddress = "";
+
+        for(let i=0; i < campInfoList.length; i++) {
             let addressJson = {};
-            let campAddress = campinfoList[i].address;
+            let campAddress = campInfoList[i].address;
             for (let j=0; j < campAddress.length; j++){
-              if(campAddress[j].type == "Physical" ){
-                addressJson = campAddress[j];
-                console.log(addressJson.line2 + ', ' + addressJson.line1);
-              }
+              if(campAddress[j].type == "Physical") {
+                if((campAddress[j].line2 != "") && (campAddress[j].line2 != "")){
+                  addressJson = campAddress[j];
+                  //console.log(addressJson.line2 + ', ' + addressJson.line1);
+                  googleAddress = `${addressJson.line2}, ${addressJson.line1}, ${addressJson.postalCode}`;
+                } else {
+                  googleAddress = `${campInfoList[i].coordinate}`;
+                }
+                console.log(googleAddress);
+              }            
             }
+            campInfoList[i].googleMapAddress = googleAddress;  
         }
-        resolve(campinfoList);
+      resolve(campInfoList);
     });
 
     
@@ -150,16 +159,16 @@ function displayResults(responseJson) {
     console.log(responseJson);
     $('#results-list').empty();
 
-displayInPage(campinfoList); 
+displayInPage(campInfoList); 
 
 };
 
 //display the results in the page
-function displayInPage(campinfoList){
+function displayInPage(campInfoList){
 
   // display in the UI
-   for(let i=0; i < campinfoList.length; i++) {
-    let campinfo = campinfoList[i];
+   for(let i=0; i < campInfoList.length; i++) {
+    let campinfo = campInfoList[i];
     $('#results-list').append(
       `<li>
       <h3>${campinfo.name}</a></h3>
