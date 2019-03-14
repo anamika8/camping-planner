@@ -1,9 +1,11 @@
 'use strict';
 const apiKeys = {
-  nps : 'FiAxcO8Cgj4inVDJSkiBlJcD6VJHQiRhirFiPyed'
+  nps : 'FiAxcO8Cgj4inVDJSkiBlJcD6VJHQiRhirFiPyed',
+  gMap : 'AIzaSyDQxa1C5wJQc_9k2zQHOTSvknhcVZgVE8c'
 }; 
 const hostURLs = {
-  camp : 'https://api.nps.gov/api/v1/campgrounds'
+  camp : 'https://api.nps.gov/api/v1/campgrounds',
+  googleMap : 'https://maps.googleapis.com/maps/api/place/textsearch/json'
 };
 
 function handleSearch() {
@@ -35,6 +37,10 @@ getCampingURL(searchState)
     .then(function(campInfoList){
      return fetchCampAddress(campInfoList);
     })
+    .then(function(campInfoList){
+      return getPhotoReference(campInfoList);
+     })
+    
     .then(function(responseJson){
       displayResults(responseJson);
     });
@@ -65,6 +71,7 @@ getCampingURL(searchState)
 
       const queryString = formatQueryParams(params)
       const campURL = (hostURLs.camp) + '?' + queryString;
+      console.log(campURL);
       resolve(campURL);
 
     });
@@ -130,29 +137,80 @@ let fetchCampAddress = function(campInfoList){
     return new Promise(function(resolve,reject) {
       let googleAddress = "";
 
-        for(let i=0; i < campInfoList.length; i++) {
-            let addressJson = {};
-            let campAddress = campInfoList[i].address;
-            for (let j=0; j < campAddress.length; j++){
-              if(campAddress[j].type == "Physical") {
-                if((campAddress[j].line2 != "") && (campAddress[j].line2 != "")){
-                  addressJson = campAddress[j];
-                  //console.log(addressJson.line2 + ', ' + addressJson.line1);
-                  googleAddress = `${addressJson.line2}, ${addressJson.line1}, ${addressJson.postalCode}`;
-                } else {
-                  googleAddress = `${campInfoList[i].coordinate}`;
-                }
-                console.log(googleAddress);
-              }            
-            }
-            campInfoList[i].googleMapAddress = googleAddress;  
-        }
+      for(let i=0; i < campInfoList.length; i++) {
+          let addressJson = {};
+          let campInfo = campInfoList[i];
+          let campAddress = campInfo.address;
+          
+          for (let j=0; j < campAddress.length; j++){
+            if(campAddress[j].type == "Physical") {
+              if((campAddress[j].line2 != "") && (campAddress[j].line2 != "")){
+                addressJson = campAddress[j];
+                //console.log(addressJson.line2 + ', ' + addressJson.line1);
+                googleAddress = `${addressJson.line2}, ${addressJson.line1}, ${addressJson.postalCode}`;
+                
+              } else {
+                googleAddress = `${campInfo.coordinate}`;
+              }
+              console.log(googleAddress);
+            }            
+          }
+          campInfo.googleMapAddress = googleAddress;  
+      }
       resolve(campInfoList);
-    });
+    });   
+};
 
-    
+/* Fetch the photo reference using Google Maps Geocoding API */
+let getPhotoReference = function(campInfoList){
+  return new Promise(function(resolve,reject) {
+    let imageReferenceURL = "";
+
+    for(let i=0; i < campInfoList.length; i++){
+      let campInfo = campInfoList[i];
+      let campAddress = campInfo.googleMapAddress;
+      let params = {};
+      
+      if (campAddress.includes("lat:")){
+        let latLong = campAddress.replace("{lat:","").replace(", lng:",",").replace("}","");     
+        params = {
+          location: latLong,
+          type:'campground',
+          key:(apiKeys.gMap)      
+        };
+        //const locationQuery = formatQueryParams(params);
+        //const photoReferenceURL = (hostURLs.googleMap) + '?' + locationQuery; 
+        //imageReferenceURL = photoReferenceURL;
+      } else {       
+        let photoReference = campAddress.split(" ").join("+");
+
+         params = {
+          query: photoReference,
+          key:(apiKeys.gMap)      
+          };
+       }
+       const locationQuery = formatQueryParams(params);
+       imageReferenceURL = (hostURLs.googleMap) + '?' + locationQuery;             
+       fetchImageReference(imageReferenceURL);
+       }
+       
+      //campInfo.imageReferenceURL = imageReferenceURL;
+      resolve();
+     });        
+};
+
+function fetchImageReference(imageReferenceURL){
+      
+      fetch(imageReferenceURL)
+      .then(response => {
+        if (response.ok) {
+          console.log(response.json());
+          return response.json();
+        }
+        throw new Error(response.statusText);
+      });     
+   
 }
-
 
 function displayResults(responseJson) {
     // if there are previous results, remove them
