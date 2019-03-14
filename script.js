@@ -125,9 +125,8 @@ function isCampsiteEligible(dataValue){
         //push the results in output array    
         campInfoList.push(campinfo);
       }    
-  }
-  
-  resolve(campInfoList);
+  }  
+resolve(campInfoList);
   
  });
 };
@@ -152,7 +151,7 @@ let fetchCampAddress = function(campInfoList){
               } else {
                 googleAddress = `${campInfo.coordinate}`;
               }
-              console.log(googleAddress);
+             console.log(googleAddress); 
             }            
           }
           campInfo.googleMapAddress = googleAddress;  
@@ -165,6 +164,7 @@ let fetchCampAddress = function(campInfoList){
 let getPhotoReference = function(campInfoList){
   return new Promise(function(resolve,reject) {
     let imageReferenceURL = "";
+    let photoReference = "";
 
     for(let i=0; i < campInfoList.length; i++){
       let campInfo = campInfoList[i];
@@ -178,40 +178,67 @@ let getPhotoReference = function(campInfoList){
           type:'campground',
           key:(apiKeys.gMap)      
         };
-        //const locationQuery = formatQueryParams(params);
-        //const photoReferenceURL = (hostURLs.googleMap) + '?' + locationQuery; 
-        //imageReferenceURL = photoReferenceURL;
       } else {       
         let photoReference = campAddress.split(" ").join("+");
 
-         params = {
+          params = {
           query: photoReference,
           key:(apiKeys.gMap)      
           };
-       }
-       const locationQuery = formatQueryParams(params);
-       imageReferenceURL = (hostURLs.googleMap) + '?' + locationQuery;             
-       fetchImageReference(imageReferenceURL);
-       }
-       
-      //campInfo.imageReferenceURL = imageReferenceURL;
-      resolve();
-     });        
+      }
+        const locationQuery = formatQueryParams(params);
+        imageReferenceURL = (hostURLs.googleMap) + '?' + locationQuery;
+        photoReference = fetchImageReference(imageReferenceURL);
+        console.log(photoReference);
+        campInfo.photoReference = photoReference;       
+     }           
+ resolve(campInfoList);
+  });        
 };
 
 function fetchImageReference(imageReferenceURL){
-      
-      fetch(imageReferenceURL)
+  
+     let photoReference = "";
+      const proxyurl = "https://cors-anywhere.herokuapp.com/";
+      fetch(proxyurl + imageReferenceURL)
       .then(response => {
         if (response.ok) {
-          console.log(response.json());
           return response.json();
         }
         throw new Error(response.statusText);
-      });     
-   
+      })
+      .then(responseJson => {
+        photoReference = extractPhotoReference(responseJson);
+        console.log("Photo Reference =" + photoReference);
+      })
+      .catch(err => {
+        console.log("Error message = " + err.message);
+      });   
 }
 
+/**
+ * This method extracts the 'photo_reference' value from the results,
+ * from the first result set as it is the nearest 
+ */
+function extractPhotoReference(responseJson) {
+  let photoReference = "";
+  if(!responseJson) {
+     console.log("The result object from google maps api is null or undefined");
+     return photoReference;
+  }
+  if(responseJson.hasOwnProperty("status") && responseJson.status == "OK"){
+    //getting the first result set only
+    let results = responseJson.results[0];
+    // again getting the photo reference from the first photo available
+    if(results.hasOwnProperty("photos") && results.photos.length > 0) {
+      photoReference = results.photos[0].photo_reference;
+    }
+  } 
+  return photoReference;
+}
+
+
+/*
 function displayResults(responseJson) {
     // if there are previous results, remove them
     console.log(responseJson);
@@ -236,7 +263,7 @@ function displayInPage(campInfoList){
   }
  //display the results section  
   $('#results').removeClass('hidden');
-}
+}*/
 
 
   function handleCampingApp() {
