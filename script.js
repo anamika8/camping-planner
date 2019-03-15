@@ -5,7 +5,8 @@ const apiKeys = {
 }; 
 const hostURLs = {
   camp : 'https://api.nps.gov/api/v1/campgrounds',
-  googleMap : 'https://maps.googleapis.com/maps/api/place/textsearch/json'
+  googleMap : 'https://maps.googleapis.com/maps/api/place/textsearch/json',
+  googlePhoto : 'https://maps.googleapis.com/maps/api/place/photo'
 };
 
 function handleSearch() {
@@ -27,7 +28,7 @@ function handleSearch() {
     const searchState = $('#search-state-list').val();
     const searchDate = $('#js-search-date').val();
 
-getCampingURL(searchState)
+    getCampingURL(searchState)
     .then(function(campURL){
       return fetchCampInfo(campURL);
     })
@@ -40,9 +41,11 @@ getCampingURL(searchState)
     .then(function(campInfoList){
       return getPhotoReference(campInfoList);
      })
-    
-    .then(function(responseJson){
-      displayResults(responseJson);
+     .then(function(campInfoList){
+        return getImageURL(campInfoList);
+       })
+    .then(function(campInfoList){
+      displayResults(campInfoList);
     });
     
   }
@@ -162,9 +165,9 @@ let fetchCampAddress = function(campInfoList){
 
 /* Fetch the photo reference using Google Maps Geocoding API */
 let getPhotoReference = function(campInfoList){
+ 
   return new Promise(function(resolve,reject) {
-    let imageReferenceURL = "";
-    let photoReference = "";
+    let allPromises = [];
 
     for(let i=0; i < campInfoList.length; i++){
       let campInfo = campInfoList[i];
@@ -178,26 +181,34 @@ let getPhotoReference = function(campInfoList){
           type:'campground',
           key:(apiKeys.gMap)      
         };
-      } else {       
+     } else {          
         let photoReference = campAddress.split(" ").join("+");
-
-          params = {
+         params = {
           query: photoReference,
           key:(apiKeys.gMap)      
-          };
-      }
+         };
+    }
         const locationQuery = formatQueryParams(params);
-        imageReferenceURL = (hostURLs.googleMap) + '?' + locationQuery;
-        photoReference = fetchImageReference(imageReferenceURL);
-        console.log(photoReference);
-        campInfo.photoReference = photoReference;       
-     }           
- resolve(campInfoList);
-  });        
+        const imageReferenceURL = (hostURLs.googleMap) + '?' + locationQuery;  
+        let newPromise = fetchImageReference(imageReferenceURL);
+        allPromises[i] = newPromise; 
+     }
+
+// make all promise in sequential manner
+     Promise.all(allPromises)
+      .then(function(campDetailsArray){
+          for (let i = 0; i < campDetailsArray.length; i++) {
+            let campInfo = campInfoList[i];
+            campInfo.photoReference = campDetailsArray[i];
+          }
+      resolve(campInfoList);
+      });
+  });     
 };
 
-function fetchImageReference(imageReferenceURL){
-  
+
+let  fetchImageReference = function(imageReferenceURL){
+  return new Promise(function(resolve,reject) {
      let photoReference = "";
       const proxyurl = "https://cors-anywhere.herokuapp.com/";
       fetch(proxyurl + imageReferenceURL)
@@ -209,11 +220,12 @@ function fetchImageReference(imageReferenceURL){
       })
       .then(responseJson => {
         photoReference = extractPhotoReference(responseJson);
-        console.log("Photo Reference =" + photoReference);
+        resolve(photoReference);
       })
       .catch(err => {
         console.log("Error message = " + err.message);
       });   
+  });
 }
 
 /**
@@ -237,11 +249,46 @@ function extractPhotoReference(responseJson) {
   return photoReference;
 }
 
+/* Used to fetch imageURL from google map api*/
+let getImageURL = function(campInfoList){
+    return new Promise(function(resolve,reject) {   
+      let allPromises = [];
 
-/*
-function displayResults(responseJson) {
+      for(let i=0; i < campInfoList.length; i++){
+        let campInfo = campInfoList[i];
+        const params = {
+            photoreference: (campInfo.photoReference),    
+            maxheight: '300',
+            key:(apiKeys.gMap)   
+          };
+    
+          const queryString = formatQueryParams(params) 
+          const imageURL = (hostURLs.googlePhoto) + '?' + queryString;
+          console.log(imageURL);
+          //let newPromise = fetchImage(imageURL);
+          campInfo.imageURL = imageURL; 
+
+        }
+      resolve(campInfoList);
+    });
+};
+
+let fetchImage = function(imageURL){
+  return new Promise(function(resolve,reject) { 
+    fetch(imageURL)
+      .then(response => {
+       if (response.ok) {
+         resolve(response.json());
+       }
+       reject(new Error(response.statusText)); 
+     });  
+
+});
+};
+
+function displayResults(campInfoList) {
     // if there are previous results, remove them
-    console.log(responseJson);
+    //console.log(responseJson);
     $('#results-list').empty();
 
 displayInPage(campInfoList); 
@@ -257,16 +304,17 @@ function displayInPage(campInfoList){
     $('#results-list').append(
       `<li>
       <h3>${campinfo.name}</a></h3>
-      <p>${campinfo.desc}</p>        
+      <p>${campinfo.desc}</p>      
+      <p>${campinfo.photoReference}</p>        
       </li>`
     );
   }
  //display the results section  
   $('#results').removeClass('hidden');
-}*/
+}
 
 
-  function handleCampingApp() {
+function handleCampingApp() {
     handleSearch();
   }
 
