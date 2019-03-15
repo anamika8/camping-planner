@@ -117,12 +117,14 @@ function isCampsiteEligible(dataValue){
         let campinfo = {};
         campinfo = {
           name : output.name,
+          parkCode : output.parkCode,
           desc : output.description,
           fee : output.fees,
           contact : output.contacts,
           hours: output.operatingHours,
           address : output.addresses,
-          coordinate : output.latLong   
+          coordinate : output.latLong,
+          weather : output.weatherOverview  
         };
         console.log(campinfo);
         //push the results in output array    
@@ -252,7 +254,6 @@ function extractPhotoReference(responseJson) {
 /* Used to fetch imageURL from google map api*/
 let getImageURL = function(campInfoList){
     return new Promise(function(resolve,reject) {   
-      let allPromises = [];
 
       for(let i=0; i < campInfoList.length; i++){
         let campInfo = campInfoList[i];
@@ -264,15 +265,12 @@ let getImageURL = function(campInfoList){
     
           const queryString = formatQueryParams(params) 
           const imageURL = (hostURLs.googlePhoto) + '?' + queryString;
-          console.log(imageURL);
-          //let newPromise = fetchImage(imageURL);
           campInfo.imageURL = imageURL; 
-
         }
       resolve(campInfoList);
     });
 };
-
+/*
 let fetchImage = function(imageURL){
   return new Promise(function(resolve,reject) { 
     fetch(imageURL)
@@ -284,7 +282,7 @@ let fetchImage = function(imageURL){
      });  
 
 });
-};
+};*/
 
 function displayResults(campInfoList) {
     // if there are previous results, remove them
