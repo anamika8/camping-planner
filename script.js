@@ -13,8 +13,7 @@ function handleSearch() {
     $('.search-button').on('click', function(event) {
       $('.js-container').addClass('hidden');
       changeBackgroundImage();
-      selectedFormdata();
-   
+      selectedFormdata(); 
     });
   }
 
@@ -285,18 +284,10 @@ let fetchImage = function(imageURL){
 };*/
 
 function displayResults(campInfoList) {
-    // if there are previous results, remove them
-    //console.log(responseJson);
-    $('#results-list').empty();
 
-displayInPage(campInfoList); 
-
-};
-
-//display the results in the page
-function displayInPage(campInfoList){
-
-  // display in the UI
+// if there are previous results, remove them
+  $('#results-list').empty();
+// display in the UI
    for(let i=0; i < campInfoList.length; i++) {
     let campinfo = campInfoList[i];
     $('#results-list').append(
@@ -308,13 +299,11 @@ function displayInPage(campInfoList){
     );
   }
  //display the results section  
-  $('#results').removeClass('hidden');
-}
+  $('#results').removeClass('hidden'); 
 
+};
 
-function handleCampingApp() {
+$(function handleCampingApp() {
+    console.log('App loaded! Waiting for submit!');
     handleSearch();
-  }
-
-  // when the page loads, call `handleCampingApp`
-  $(handleCampingApp);
+});
