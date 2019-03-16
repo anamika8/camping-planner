@@ -211,7 +211,7 @@ let getPhotoReference = function(campInfoList){
 let  fetchImageReference = function(imageReferenceURL){
   return new Promise(function(resolve,reject) {
      let photoReference = "";
-      const proxyurl = "https://cors-anywhere.herokuapp.com/";
+      const proxyurl = "https://cors.io/?";
       fetch(proxyurl + imageReferenceURL)
       .then(response => {
         if (response.ok) {
