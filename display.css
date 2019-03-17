@@ -1,0 +1,327 @@
+.container body{
+    margin-top:20px;
+    background:#eee;
+}
+
+.container.list-card {
+    position: relative;
+    max-width: 380px;
+    padding-top: 12px;
+    padding-bottom: 43px;
+    transition: all 0.35s;
+    border: 1px solid #e7e7e7;
+  }
+
+.container .list-card .list-head {
+    padding: 0 15px 8px;
+  }
+.container .list-card .list-head .badge {
+    margin: 0;
+  }
+.container .list-card .list-thumb {
+    display: block;
+  }
+
+.container .list-card .list-thumb > img {
+    display: block;
+    width: 100%;
+  }
+.container .list-card .list-card-body {
+    padding: 0 20px;
+    text-align: center;
+  }
+.container .list-card .list-meta {
+    display: block;
+    padding: 12px 0 2px;
+    transition: color 0.25s;
+    color: rgba(140, 140, 140, .75);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+.container .list-card .list-meta:hover {
+    color: #8c8c8c;
+  }
+.container .list-card .list-title {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+.container .list-card .list-title > a {
+    transition: color 0.3s;
+    color: #343b43;
+    text-decoration: none;
+  }
+.container .list-card .list-title > a:hover {
+    color: #ac32e4;
+  }
+.container .list-card .list-price {
+    display: block;
+    color: #404040;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: normal;
+  }
+.container .list-card .list-price > del {
+    margin-right: 6px;
+    color: rgba(140, 140, 140, .75);
+  }
+.container .list-card .list-buttons-wrap {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    width: 100%;
+  }
+.container .list-card .list-buttons {
+    display: table;
+    margin: auto;
+    background-color: #fff;
+    box-shadow: 0 12px 20px 1px rgba(64, 64, 64, .11);
+  }
+.container .list-card .list-button {
+    display: table-cell;
+    position: relative;
+    width: 50px;
+    height: 40px;
+    border-right: 1px solid rgba(231, 231, 231, .6);
+  }
+.container .list-card .list-button:last-child {
+    border-right: 0;
+  }
+.container .list-card .list-button > a {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s;
+    color: #404040;
+    font-size: 16px;
+    line-height: 40px;
+    text-align: center;
+    text-decoration: none;
+  }
+.container .list-card .list-button > a:hover {
+    background-color: #ac32e4;
+    color: #fff;
+  }
+.container .list-card:hover {
+    border-color: transparent;
+    box-shadow: 0 12px 20px 1px rgba(64, 64, 64, .09);
+  }
+.container .list-category-card {
+    display: block;
+    max-width: 400px;
+    text-align: center;
+    text-decoration: none !important;
+  }
+.container .list-category-card .list-category-card-thumb {
+    display: table;
+    width: 100%;
+    box-shadow: 0 12px 20px 1px rgba(64, 64, 64, .09);
+  }
+.container .list-category-card .list-category-card-body {
+    padding: 20px;
+    padding-bottom: 28px;
+  }
+.container .list-category-card .main-img, .list-category-card .thumblist {
+    display: table-cell;
+    padding: 15px;
+    vertical-align: middle;
+  }
+.container .list-category-card .main-img > img, .list-category-card .thumblist > img {
+    display: block;
+    width: 100%;
+  }
+  .container .list-category-card .main-img {
+    width: 65%;
+    padding-right: 10px;
+  }
+  .container .list-category-card .thumblist {
+    width: 35%;
+    padding-left: 10px;
+  }
+  .container .list-category-card .thumblist > img:first-child {
+    margin-bottom: 6px;
+  }
+  .container .list-category-card .list-category-card-meta {
+    display: block;
+    padding-bottom: 9px;
+    color: rgba(140, 140, 140, .75);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .container .list-category-card .list-category-card-title {
+    margin-bottom: 0;
+    transition: color 0.3s;
+    color: #343b43;
+    font-size: 18px;
+  }
+  .container .list-category-card:hover .list-category-card-title {
+    color: #ac32e4;
+  }
+  .container .list-gallery {
+    position: relative;
+    padding: 45px 15px 0;
+    box-shadow: 0 12px 20px 1px rgba(64, 64, 64, .09);
+  }
+  .container .list-gallery .gallery-item::before {
+    display: none !important;
+  }
+  .container .list-gallery .gallery-item::after {
+    box-shadow: 0 8px 24px 0 rgba(0, 0, 0, .26);
+  }
+  .list-gallery .video-player-button, .list-gallery .badge {
+    position: absolute;
+    z-index: 5;
+  }
+  .container .list-gallery .badge {
+    top: 15px;
+    left: 15px;
+    margin-left: 0;
+  }
+  .container .list-gallery .video-player-button {
+    top: 0;
+    right: 15px;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+  }
+  .container .list-gallery .list-thumbnails {
+    display: block;
+    margin: 0 -15px;
+    padding: 12px;
+    border-top: 1px solid #e7e7e7;
+    list-style: none;
+    text-align: center;
+  }
+  .container .list-gallery .list-thumbnails > li {
+    display: inline-block;
+    margin: 10px 3px;
+  }
+  .container  .list-gallery .list-thumbnails > li > a {
+    display: block;
+    width: 94px;
+    transition: all 0.25s;
+    border: 1px solid transparent;
+    background-color: #fff;
+    opacity: 0.75;
+  }
+  .container .list-gallery .list-thumbnails > li:hover > a {
+    opacity: 1;
+  }
+  .container .list-gallery .list-thumbnails > li.active > a {
+    border-color: #ac32e4;
+    cursor: default;
+    opacity: 1;
+  }
+  .container .list-meta {
+    padding-bottom: 10px;
+  }
+  .container .list-meta > a, .list-meta > i {
+    display: inline-block;
+    margin-right: 5px;
+    color: rgba(140, 140, 140, .75);
+    vertical-align: middle;
+  }
+  .container .list-meta > i {
+    margin-top: 2px;
+  }
+  .container .list-meta > a {
+    transition: color 0.25s;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .container .list-meta > a:hover {
+    color: #8c8c8c;
+  }
+  .container .camping-item {
+    position: relative;
+    margin-bottom: 30px;
+    padding: 0 50px 0 10px;
+    background-color: #fff;
+    box-shadow: 0 12px 20px 1px rgba(64, 64, 64, .09);
+  }
+  .container .camping-item .camping-item-label {
+    display: block;
+    margin-bottom: 15px;
+    color: #8c8c8c;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .container .camping-item .camping-item-list {
+    display: table;
+    width: 420px;
+    text-decoration: none;
+  }
+  .container .camping-item .camping-item-list-thumb, .camping-item .camping-item-list-info {
+    display: table-cell;
+    vertical-align: top;
+  }
+  .container .camping-item .camping-item-list-thumb {
+    width: 110px;
+  }
+  .container .camping-item .camping-item-list-thumb > img {
+    display: block;
+    width: 100%;
+  }
+  .container .camping-item .camping-item-list-info {
+    padding-top: 5px;
+    padding-left: 15px;
+  }
+  .container .camping-item .camping-item-list-info > span {
+    display: block;
+    margin-bottom: 2px;
+    color: #404040;
+    font-size: 12px;
+  }
+  .camping-item .camping-item-list-title {
+    margin-bottom: 8px;
+    transition: color, 0.3s;
+    color: #343b43;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .container .camping-item .camping-item-list:hover .camping-item-list-title {
+    color: #ac32e4;
+  }
+  .container .camping-item .desc {
+    display: inline-block;
+    width: 85px;
+  }
+  .container .camping-item .remove-item {
+    right: -10px !important;
+  }
+  @media (max-width: 991px) {
+    .container .camping-item {
+      padding-right: 30px;
+    }
+    .container .camping-item .camping-item-list {
+      width: auto;
+    }
+  }
+  @media (max-width: 768px) {
+    .container .camping-item {
+      padding-right: 10px;
+      padding-bottom: 15px;
+    }
+    .container .camping-item .camping-item-list {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    .container .camping-item .camping-item-list-thumb, .camping-item .camping-item-list-info {
+      display: block;
+    }
+    .container .camping-item .camping-item-list-thumb {
+      margin: 0 auto 10px;
+    }
+    .container .camping-item .camping-item-list-info {
+      padding-left: 0;
+    }
+    .container .camping-item .camping-item-label {
+      margin-bottom: 8px;
+    }
+  }

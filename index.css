@@ -78,7 +78,16 @@
     display: none;
   }
 
-  .display-section {
+  .loading-img {
+    display: none;
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    margin-left: -(X/2)px;
+    margin-top: -(Y/2)px;
+  }
+
+  /*.display-section {
     padding: 20px;
     background: white;
     font-size: 16px;
@@ -88,8 +97,11 @@
     padding-top: 10px;
     overflow-wrap: break-word;
     word-wrap: break-word; 
-  }
+  }*/
 
   div {
     display: block;
 }
+
+
+

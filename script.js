@@ -9,10 +9,12 @@ const hostURLs = {
   googlePhoto : 'https://maps.googleapis.com/maps/api/place/photo'
 };
 
+
 function handleSearch() {
     $('.search-button').on('click', function(event) {
       $('.js-container').addClass('hidden');
-      changeBackgroundImage();
+      showLoadingImage();
+      //changeBackgroundImage();
       selectedFormdata(); 
     });
   }
@@ -20,6 +22,15 @@ function handleSearch() {
 /*Changing the background of the page*/
   function changeBackgroundImage() {
     $("html").css("background-image", "url('https://images.unsplash.com/photo-1446483284190-e09276f22d63?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80')");
+  }
+
+  function showLoadingImage() {
+    $("#js-container").css("opacity",0.5);
+    $('.loading-img').show();
+  }
+
+  function disappearLoadingImage() {
+    $('.loading-img').hide();
   }
 
 /* Get the values selected by the user*/ 
@@ -42,7 +53,7 @@ function handleSearch() {
      })
      .then(function(campInfoList){
         return getImageURL(campInfoList);
-       })
+     })
     .then(function(campInfoList){
       displayResults(campInfoList);
     });
@@ -284,26 +295,76 @@ let fetchImage = function(imageURL){
 };*/
 
 function displayResults(campInfoList) {
-
+  toggleBootstrapStylesheet();
+  $("body").css("background-color", "transparent");
+  disappearLoadingImage();
+  changeBackgroundImage();
+  
 // if there are previous results, remove them
   $('#results-list').empty();
 // display in the UI
    for(let i=0; i < campInfoList.length; i++) {
     let campinfo = campInfoList[i];
-    $('#results-list').append(
+    /*$('#results-list').append(
       `<li>
       <h3>${campinfo.name}</a></h3>
       <p>${campinfo.desc}</p>      
       <p>${campinfo.photoReference}</p>        
-      </li>`
+      </li>`*/
+      $('#results-list').append(
+      `
+        <div class="camping-item d-md-flex justify-content-between">
+            <div class="px-3 my-3">
+                <a class="camping-item-list" href="#">
+                    <div class="camping-item-list-thumb"><img src="https://maps.googleapis.com/maps/api/place/photo?photoreference=CmRaAAAAndc4Yr9Lijc9GDAAxnq28ui8cwolCjk3VqezsC3PF5SW8BVPNQboHdu_6d8jw4DrS9wyVqYaLRxuXPQVNcEExR2ECIQvB0HV7BST8q-n6eySkys14H0AAwazqK6mCELDEhD5ALCXwVh77oxP30-9k7FuGhSLQAmwU96SDvaxZZFAZCQvCd4cuQ&maxheight=300&key=AIzaSyDQxa1C5wJQc_9k2zQHOTSvknhcVZgVE8c" alt="list"></div>
+                    <div class="camping-item-list-info">
+                        <h4 class="camping-item-list-title">Mazama Village Campground</h4><span><strong>Address:</strong> home icon</span><span><strong>Operating Hours:</strong>time value</span>
+                    </div>
+                </a>
+            </div>
+            <div class="px-3 my-3 text-center">
+                <div class="camping-item-label">Description</div>
+                <div class="desc">
+                   
+                </div>
+            </div>
+            <div class="px-3 my-3 text-center">
+                <div class="camping-item-label">Fees</div><span class="text-xl font-weight-medium">value</span>
+            </div>           
+            <div class="px-3 my-3 text-center">
+                <div class="camping-item-label">Contact for Booking</div>
+                <span><strong>Number:</strong>icon</span>
+                <br>
+                <span><strong>Email:</strong>value</span>
+            </div>
+            <div class="px-3 my-3 text-center">
+                <div class="camping-item-label">Other Information</div>
+                <span><strong>Weather:</strong>icon</span>
+                <br>
+                <span><strong>Alerts:</strong>value</span>
+            </div>
+        </div>
+      `
+    
     );
+    
   }
  //display the results section  
   $('#results').removeClass('hidden'); 
 
 };
 
+function toggleBootstrapStylesheet(){
+  if($('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled')) {
+    $('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', false);
+  } else {
+    $('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', true);
+  }
+}
+
 $(function handleCampingApp() {
     console.log('App loaded! Waiting for submit!');
+    toggleBootstrapStylesheet();
+    //$('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', true);
     handleSearch();
 });

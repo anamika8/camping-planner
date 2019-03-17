@@ -6,13 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Plan a Camping Trip</title>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>  
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="index.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">     
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">    
+    <link rel="stylesheet" href="index.css"> 
+    <link rel="stylesheet" href="display.css">   
+
 </head>
+
 <body>
 
-    <div class="js-container">
+<div id="loader">
+        <img src="loading.gif" class="loading-img"/>
+</div>
+
+<div class="js-container">
         <header role="banner">
          <h1>Let's Plan Your Next Camping Trip</h1>
          </header>
@@ -95,16 +103,23 @@
        </div>
     </form> 
 </div>
-<div class = "campground-list">
-        <p id="js-error-message" class="error-message"></p>
-        <section id="results" class="hidden">
-          <h1>Available Campgrounds</h1>
-          <div class = "display-section">
-          <ul id="results-list">
-          </ul>
+<div class = "container">
+    <p id="js-error-message" class="error-message"></p>
+    <section id="results" class="hidden">
+        <!-- Title-->
+          <div class="alert alert-info alert-dismissible fade show text-center mb-30"><strong>Available Campgrounds</strong></div>
+        <!--display-section-->
+          <div id="results-list">
           </div>
-        </section>
+        <!-- Buttons-->
+        <hr class="my-2">
+        <div class="row pt-3 pb-5 mb-2">
+            <div class="col-sm-6 mb-3"><a class="btn btn-style-1 btn-primary btn-block" href="#">Back</a></div>
+            <div class="col-sm-6 mb-3"><a class="btn btn-style-1 btn-primary btn-block" href="checkout-address.html">More Information</a></div>
+        </div> 
+    </section>
 </div>
  <script src="script.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 </body>
 </html>
