@@ -245,11 +245,18 @@
   }
   .container .camping-item .camping-item-label {
     display: block;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: #8c8c8c;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
+  }
+
+  .container .camping-item .camping-item-value {
+    margin-bottom: 8px;
+    color: #0a0808;
+    font-size: 12px;
+    font-weight: 450;
   }
   .container .camping-item .camping-item-list {
     display: table;
@@ -323,5 +330,8 @@
     }
     .container .camping-item .camping-item-label {
       margin-bottom: 8px;
+    }
+    .container .camping-item .camping-item-value {
+      margin-bottom: 5px;
     }
   }

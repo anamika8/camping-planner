@@ -9,12 +9,19 @@ const hostURLs = {
   googlePhoto : 'https://maps.googleapis.com/maps/api/place/photo'
 };
 
+const defaultMessages = {
+  noFeesInfoAvailable : "Fees Information Not Available",
+  noHoursInfoAvailable : "No Operating Hours information is available",
+  noDescriptionAvailable : "No Campground description available",
+  noPhysicalAddressAvailable : "No Physical Address for this Campground is available",
+  noPhoneNumberAvailable : " MissingPhone Number"
+};
+
 
 function handleSearch() {
     $('.search-button').on('click', function(event) {
       $('.js-container').addClass('hidden');
-      showLoadingImage();
-      //changeBackgroundImage();
+      showCampfireBurningGif();
       selectedFormdata(); 
     });
   }
@@ -24,14 +31,10 @@ function handleSearch() {
     $("html").css("background-image", "url('https://images.unsplash.com/photo-1446483284190-e09276f22d63?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80')");
   }
 
-  function showLoadingImage() {
-    $("#js-container").css("opacity",0.5);
-    $('.loading-img').show();
+  function showCampfireBurningGif() {
+    $("html").css("background-image", "url('https://www.sunnysports.com/blog/wp-content/uploads/2017/10/biolite-firepit.gif')");
   }
 
-  function disappearLoadingImage() {
-    $('.loading-img').hide();
-  }
 
 /* Get the values selected by the user*/ 
   function selectedFormdata() {
@@ -134,10 +137,115 @@ function isCampsiteEligible(dataValue){
           hours: output.operatingHours,
           address : output.addresses,
           coordinate : output.latLong,
-          weather : output.weatherOverview  
+          weather : output.weatherOverview,
+          // returns a short description to be shown in the UI
+          shortDescription : function(wordLength) {
+             //checking the field is not null
+             if(!this.desc || this.desc == '') {
+               return defaultMessages.noDescriptionAvailable;
+             }
+             let whitespace = " ";
+             let wordsArray = this.desc.split(whitespace);
+             let shortDescription = '';
+             if (wordsArray.length <= wordLength) {
+               shortDescription = this.desc;
+             } else {
+               let shortDescArray = [];
+               for (let i=0; i < wordLength; i++) {
+                 shortDescArray.push(wordsArray[i]);
+               }
+               shortDescArray.push("...");
+               shortDescription = shortDescArray.join(whitespace);
+             }
+             return shortDescription;
+          },
+          // returns the physical address to be shown in the UI
+          displayAddress : function() {
+             //checking the field is not null or empty.if yes we are displaying latLong value
+            if((typeof this.address == "undefined") || this.address.length == 0){
+              let latLongValArray = this.coordinate.replace("{lat:","").replace(", lng:",",").replace("}","").split(",");
+              return convertDMS(latLongValArray[0], latLongValArray[1]);
+            }
+            let addressToShow = "";
+            for (let j=0; j < this.address.length; j++){
+              let addressJson = this.address[j];
+              if(addressJson.type == "Physical") {
+                 //making sure both the address lines are not empty
+                if((addressJson.line2 != "") || (addressJson.line1 != "")){
+                  addressToShow += (addressJson.line2 != "") ? `${addressJson.line2},` : "";
+                  addressToShow += (addressJson.line1 != "") ? `${addressJson.line1},` : "";
+                  addressToShow += (addressJson.postalCode != "") ? `${addressJson.postalCode}` : "";
+                } else if(this.coordinate == ""){ //in case address lines as well as latLong is also empty
+                  addressToShow =  defaultMessages.noPhysicalAddressAvailable; 
+                } else { //both address lines are empty but latLong is having value
+                  let latLongValArray = this.coordinate.replace("{lat:","").replace(", lng:",",").replace("}","").split(",");
+                  addressToShow = convertDMS(latLongValArray[0], latLongValArray[1]);
+                }
+                break;
+              }            
+            }
+            return addressToShow;
+          },
+          // returns the fees for this campground
+          displayFees : function() {
+            if((typeof this.fee == "undefined") || this.fee.length == 0){
+              return defaultMessages.noFeesInfoAvailable;
+            }
+            let feeInfoToShow = "";
+            let feeInfo = {};
+            for (let i=0; i < this.fee.length; i++) {
+              feeInfo = this.fee[i];
+              feeInfoToShow += `${feeInfo.title} : $${feeInfo.cost}/night <br>`; 
+            }
+            return feeInfoToShow;
+          },
+          // returns the operation hours information
+          displayOperatingHours : function() {
+            if((typeof this.hours == "undefined") || this.hours.length == 0){
+              return defaultMessages.noHoursInfoAvailable;
+            }
+            let hours = this.hours[0];
+            return Object.keys(hours.standardHours).map(key => ` ${key.substring(0,3).toUpperCase()} : ${hours.standardHours[key]}` );
+          },
+          // returns the phone & fax number in tooltip
+          tooltipPhoneNumber : function() {
+            if((typeof this.contact == "undefined") || this.contact.length == 0){
+              return defaultMessages.noPhoneNumberAvailable;
+            }
+            let phoneNumbers = this.contact.phoneNumbers;
+            if((typeof phoneNumbers == "undefined") || phoneNumbers.length == 0){
+              return defaultMessages.noPhoneNumberAvailable;
+            }
+            let phoneNumberToShow = "";
+            for(let i=0; i < phoneNumbers.length; i++) {
+              phoneNumberToShow += `${phoneNumbers[i].type} : ${phoneNumbers[i].phoneNumber}  `;
+            }
+            return phoneNumberToShow;
+          },
+          // returns the phone & fax number in tooltip
+          displayPhoneNumber : function() {
+            if((typeof this.contact == "undefined") || this.contact.length == 0){
+              return defaultMessages.noPhoneNumberAvailable;
+            }
+            let phoneNumbers = this.contact.phoneNumbers;
+            if((typeof phoneNumbers == "undefined") || phoneNumbers.length == 0){
+              return defaultMessages.noPhoneNumberAvailable;
+            }
+            let phoneNumberToShow = "";
+            for(let i=0; i < phoneNumbers.length; i++) {
+              if (phoneNumbers[i].type == "Voice") {
+                phoneNumberToShow = phoneNumbers[i].phoneNumber;
+                break;
+              }
+            }
+            if (phoneNumberToShow == "") {
+              phoneNumberToShow = defaultMessages.noPhoneNumberAvailable;
+            }
+            return phoneNumberToShow;
+          }
         };
         console.log(campinfo);
-        //push the results in output array    
+        //push the results into output array    
         campInfoList.push(campinfo);
       }    
   }  
@@ -162,7 +270,6 @@ let fetchCampAddress = function(campInfoList){
                 addressJson = campAddress[j];
                 //console.log(addressJson.line2 + ', ' + addressJson.line1);
                 googleAddress = `${addressJson.line2}, ${addressJson.line1}, ${addressJson.postalCode}`;
-                
               } else {
                 googleAddress = `${campInfo.coordinate}`;
               }
@@ -297,61 +404,60 @@ let fetchImage = function(imageURL){
 function displayResults(campInfoList) {
   toggleBootstrapStylesheet();
   $("body").css("background-color", "transparent");
-  disappearLoadingImage();
   changeBackgroundImage();
   
 // if there are previous results, remove them
   $('#results-list').empty();
 // display in the UI
    for(let i=0; i < campInfoList.length; i++) {
-    let campinfo = campInfoList[i];
+    let campInfo = campInfoList[i];
     /*$('#results-list').append(
       `<li>
       <h3>${campinfo.name}</a></h3>
       <p>${campinfo.desc}</p>      
       <p>${campinfo.photoReference}</p>        
       </li>`*/
+     
       $('#results-list').append(
       `
-        <div class="camping-item d-md-flex justify-content-between">
-            <div class="px-3 my-3">
-                <a class="camping-item-list" href="#">
-                    <div class="camping-item-list-thumb"><img src="https://maps.googleapis.com/maps/api/place/photo?photoreference=CmRaAAAAndc4Yr9Lijc9GDAAxnq28ui8cwolCjk3VqezsC3PF5SW8BVPNQboHdu_6d8jw4DrS9wyVqYaLRxuXPQVNcEExR2ECIQvB0HV7BST8q-n6eySkys14H0AAwazqK6mCELDEhD5ALCXwVh77oxP30-9k7FuGhSLQAmwU96SDvaxZZFAZCQvCd4cuQ&maxheight=300&key=AIzaSyDQxa1C5wJQc_9k2zQHOTSvknhcVZgVE8c" alt="list"></div>
-                    <div class="camping-item-list-info">
-                        <h4 class="camping-item-list-title">Mazama Village Campground</h4><span><strong>Address:</strong> home icon</span><span><strong>Operating Hours:</strong>time value</span>
-                    </div>
-                </a>
-            </div>
-            <div class="px-3 my-3 text-center">
-                <div class="camping-item-label">Description</div>
-                <div class="desc">
-                   
-                </div>
-            </div>
-            <div class="px-3 my-3 text-center">
-                <div class="camping-item-label">Fees</div><span class="text-xl font-weight-medium">value</span>
-            </div>           
-            <div class="px-3 my-3 text-center">
-                <div class="camping-item-label">Contact for Booking</div>
-                <span><strong>Number:</strong>icon</span>
-                <br>
-                <span><strong>Email:</strong>value</span>
-            </div>
-            <div class="px-3 my-3 text-center">
-                <div class="camping-item-label">Other Information</div>
-                <span><strong>Weather:</strong>icon</span>
-                <br>
-                <span><strong>Alerts:</strong>value</span>
-            </div>
-        </div>
-      `
-    
-    );
-    
-  }
+      <div class="camping-item d-md-flex justify-content-between">
+      <div class="px-3 my-3">
+          <a class="camping-item-list" href="#">
+              <div class="camping-item-list-thumb"><img src="${campInfo.imageURL}" alt="list"></div>
+              <div class="camping-item-list-info">
+                  <h4 class="camping-item-list-title">${campInfo.name}</h4><span><strong><i class="fa fa-home" style="font-size:24px;color:blue"></i>:</strong> ${campInfo.displayAddress()}</span><span><strong>Operating Hours:</strong>${campInfo.displayOperatingHours()}</span>
+              </div>
+          </a>
+      </div>
+      <div class="px-3 my-3">
+          <div class="camping-item-label">Description</div>
+          <div class="camping-item-value" title="${campInfo.desc}">
+            ${campInfo.shortDescription(30)}
+          </div>
+      </div>
+      <div class="px-3 my-3">
+          <div class="camping-item-label">Fees</div><span class="camping-item-value">${campInfo.displayFees()}</span>
+      </div>           
+      <div class="px-3 my-3 text-center">
+          <div class="camping-item-label">Booking Contacts</div>
+           <span class="camping-item-value"><strong><i class="fa fa-phone" style="font-size:24px;color:blue" title="${campInfo.tooltipPhoneNumber()}"></i></strong>${campInfo.displayPhoneNumber()}</span>
+           <br>
+          <span class="camping-item-value"><strong><i class="fa fa-envelope" style="font-size:20px;color:blue"></i></strong>value</span>
+      </div>
+      <div class="px-3 my-3">
+          <div class="camping-item-label">Other Information</div>
+          <span class="camping-item-value"><strong><i class="fa fa-cloud" style="font-size:20px;color:blue"></i> :</strong>value</span>
+          <br>
+          <span class="camping-item-value"><strong><i class="fa fa-info-circle" style="font-size:20px;color:red"></i> :</strong>value</span>
+      </div>
+  </div>
+`
+ );
+
+}
+  
  //display the results section  
   $('#results').removeClass('hidden'); 
-
 };
 
 function toggleBootstrapStylesheet(){
@@ -360,6 +466,32 @@ function toggleBootstrapStylesheet(){
   } else {
     $('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', true);
   }
+}
+
+/**
+ * Converts coordinates to Degrees, Minutes and Seconds
+ */
+function toDegreesMinutesAndSeconds(coordinate) {
+  var absolute = Math.abs(coordinate);
+  var degrees = Math.floor(absolute);
+  var minutesNotTruncated = (absolute - degrees) * 60;
+  var minutes = Math.floor(minutesNotTruncated);
+  var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
+
+  return degrees + " " + minutes + " " + seconds;
+}
+
+/**
+ * Converts latitude and longitude values to more readable formats
+ */
+function convertDMS(lat, lng) {
+  var latitude = toDegreesMinutesAndSeconds(lat);
+  var latitudeCardinal = Math.sign(lat) >= 0 ? "N" : "S";
+
+  var longitude = toDegreesMinutesAndSeconds(lng);
+  var longitudeCardinal = Math.sign(lng) >= 0 ? "E" : "W";
+
+  return latitude + " " + latitudeCardinal + "; " + longitude + " " + longitudeCardinal;
 }
 
 $(function handleCampingApp() {
