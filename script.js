@@ -14,7 +14,8 @@ const defaultMessages = {
   noHoursInfoAvailable : "No Operating Hours information is available",
   noDescriptionAvailable : "No Campground description available",
   noPhysicalAddressAvailable : "No Physical Address for this Campground is available",
-  noPhoneNumberAvailable : " MissingPhone Number"
+  noPhoneNumberAvailable : " MissingPhone Number",
+  noEmailAddressAvailable: "Not Available"
 };
 
 
@@ -117,142 +118,27 @@ function isCampsiteEligible(dataValue){
           return true;
     } 
     return false;
-  }
+}
 
 /*Populate Camping list values*/
  let populateCampingList = function(responseJson){
     return new Promise(function(resolve,reject) {
-     let campInfoList = [];
- // iterate through the items array
- for (let i = 0; i < responseJson.data.length; i++){
-    let output = responseJson.data[i];
-      if (isCampsiteEligible(output)){
-        let campinfo = {};
-        campinfo = {
-          name : output.name,
-          parkCode : output.parkCode,
-          desc : output.description,
-          fee : output.fees,
-          contact : output.contacts,
-          hours: output.operatingHours,
-          address : output.addresses,
-          coordinate : output.latLong,
-          weather : output.weatherOverview,
-          // returns a short description to be shown in the UI
-          shortDescription : function(wordLength) {
-             //checking the field is not null
-             if(!this.desc || this.desc == '') {
-               return defaultMessages.noDescriptionAvailable;
-             }
-             let whitespace = " ";
-             let wordsArray = this.desc.split(whitespace);
-             let shortDescription = '';
-             if (wordsArray.length <= wordLength) {
-               shortDescription = this.desc;
-             } else {
-               let shortDescArray = [];
-               for (let i=0; i < wordLength; i++) {
-                 shortDescArray.push(wordsArray[i]);
-               }
-               shortDescArray.push("...");
-               shortDescription = shortDescArray.join(whitespace);
-             }
-             return shortDescription;
-          },
-          // returns the physical address to be shown in the UI
-          displayAddress : function() {
-             //checking the field is not null or empty.if yes we are displaying latLong value
-            if((typeof this.address == "undefined") || this.address.length == 0){
-              let latLongValArray = this.coordinate.replace("{lat:","").replace(", lng:",",").replace("}","").split(",");
-              return convertDMS(latLongValArray[0], latLongValArray[1]);
-            }
-            let addressToShow = "";
-            for (let j=0; j < this.address.length; j++){
-              let addressJson = this.address[j];
-              if(addressJson.type == "Physical") {
-                 //making sure both the address lines are not empty
-                if((addressJson.line2 != "") || (addressJson.line1 != "")){
-                  addressToShow += (addressJson.line2 != "") ? `${addressJson.line2},` : "";
-                  addressToShow += (addressJson.line1 != "") ? `${addressJson.line1},` : "";
-                  addressToShow += (addressJson.postalCode != "") ? `${addressJson.postalCode}` : "";
-                } else if(this.coordinate == ""){ //in case address lines as well as latLong is also empty
-                  addressToShow =  defaultMessages.noPhysicalAddressAvailable; 
-                } else { //both address lines are empty but latLong is having value
-                  let latLongValArray = this.coordinate.replace("{lat:","").replace(", lng:",",").replace("}","").split(",");
-                  addressToShow = convertDMS(latLongValArray[0], latLongValArray[1]);
-                }
-                break;
-              }            
-            }
-            return addressToShow;
-          },
-          // returns the fees for this campground
-          displayFees : function() {
-            if((typeof this.fee == "undefined") || this.fee.length == 0){
-              return defaultMessages.noFeesInfoAvailable;
-            }
-            let feeInfoToShow = "";
-            let feeInfo = {};
-            for (let i=0; i < this.fee.length; i++) {
-              feeInfo = this.fee[i];
-              feeInfoToShow += `${feeInfo.title} : $${feeInfo.cost}/night <br>`; 
-            }
-            return feeInfoToShow;
-          },
-          // returns the operation hours information
-          displayOperatingHours : function() {
-            if((typeof this.hours == "undefined") || this.hours.length == 0){
-              return defaultMessages.noHoursInfoAvailable;
-            }
-            let hours = this.hours[0];
-            return Object.keys(hours.standardHours).map(key => ` ${key.substring(0,3).toUpperCase()} : ${hours.standardHours[key]}` );
-          },
-          // returns the phone & fax number in tooltip
-          tooltipPhoneNumber : function() {
-            if((typeof this.contact == "undefined") || this.contact.length == 0){
-              return defaultMessages.noPhoneNumberAvailable;
-            }
-            let phoneNumbers = this.contact.phoneNumbers;
-            if((typeof phoneNumbers == "undefined") || phoneNumbers.length == 0){
-              return defaultMessages.noPhoneNumberAvailable;
-            }
-            let phoneNumberToShow = "";
-            for(let i=0; i < phoneNumbers.length; i++) {
-              phoneNumberToShow += `${phoneNumbers[i].type} : ${phoneNumbers[i].phoneNumber}  `;
-            }
-            return phoneNumberToShow;
-          },
-          // returns the phone & fax number in tooltip
-          displayPhoneNumber : function() {
-            if((typeof this.contact == "undefined") || this.contact.length == 0){
-              return defaultMessages.noPhoneNumberAvailable;
-            }
-            let phoneNumbers = this.contact.phoneNumbers;
-            if((typeof phoneNumbers == "undefined") || phoneNumbers.length == 0){
-              return defaultMessages.noPhoneNumberAvailable;
-            }
-            let phoneNumberToShow = "";
-            for(let i=0; i < phoneNumbers.length; i++) {
-              if (phoneNumbers[i].type == "Voice") {
-                phoneNumberToShow = phoneNumbers[i].phoneNumber;
-                break;
-              }
-            }
-            if (phoneNumberToShow == "") {
-              phoneNumberToShow = defaultMessages.noPhoneNumberAvailable;
-            }
-            return phoneNumberToShow;
-          }
-        };
-        console.log(campinfo);
-        //push the results into output array    
-        campInfoList.push(campinfo);
-      }    
-  }  
-resolve(campInfoList);
-  
- });
+      let campInfoList = [];
+      // iterate through the items array
+      for (let i = 0; i < responseJson.data.length; i++){
+          let output = responseJson.data[i];
+            if (isCampsiteEligible(output)){
+              let campinfo = createCampInfoObject(output);
+              console.log(campinfo);
+              //push the results into output array    
+              campInfoList.push(campinfo);
+            }    
+      }  
+      resolve(campInfoList);
+    });
 };
+
+
 
 /* fetch the adress value from campinfo object*/
 let fetchCampAddress = function(campInfoList){
@@ -387,19 +273,204 @@ let getImageURL = function(campInfoList){
       resolve(campInfoList);
     });
 };
-/*
-let fetchImage = function(imageURL){
-  return new Promise(function(resolve,reject) { 
-    fetch(imageURL)
-      .then(response => {
-       if (response.ok) {
-         resolve(response.json());
-       }
-       reject(new Error(response.statusText)); 
-     });  
 
-});
-};*/
+/**
+ * Creates the basic campInfo object with its associated methods
+ * from the JSON response of /campgrounds API.
+ */
+function createCampInfoObject(output) {
+  let campInfo = {
+    name : output.name,
+    parkCode : output.parkCode,
+    desc : output.description,
+    fee : output.fees,
+    contact : output.contacts,
+    hours: output.operatingHours,
+    address : output.addresses,
+    coordinate : output.latLong,
+    weather : output.weatherOverview,
+    // returns a short description to be shown in the UI
+    shortDescription : function(wordLength) {
+       return returnCampgroundShortDescription(this.desc, wordLength);
+    },
+    // returns the physical address to be shown in the UI
+    displayAddress : function() {
+      return returnCampsitePhysicalAddress(this.address, this.coordinate);
+    },
+    // returns the fees for this campground
+    displayFees : function() {
+      return returnParkFeeInfo(this.fee);
+    },
+    // returns the operation hours information
+    displayOperatingHours : function() {
+      return returnDisplayOperatingHours(this.hours);
+    },
+    // returns the phone & fax number in tooltip
+    tooltipPhoneNumber : function() {
+      return returnTooltipPhoneNumber(this.contact);
+    },
+    // returns the phone to display in UI
+    displayPhoneNumber : function() {
+      return returnPhoneNumberToDisplay(this.contact);
+    },
+    //returns the email to display in UI
+    displayEmailAddress : function() {
+      return returnEmailAddressToDisplay(this.contact);
+    }
+  };
+  return campInfo;
+}
+
+function returnCampgroundShortDescription(desc, wordLength) {
+  //checking the field is not null
+  if(!desc || desc == '') {
+    return defaultMessages.noDescriptionAvailable;
+  }
+  let whitespace = " ";
+  let wordsArray = desc.split(whitespace);
+  let shortDescription = '';
+  if (wordsArray.length <= wordLength) {
+    shortDescription = desc;
+  } else {
+    let shortDescArray = [];
+    for (let i=0; i < wordLength; i++) {
+      shortDescArray.push(wordsArray[i]);
+    }
+    shortDescArray.push("...");
+    shortDescription = shortDescArray.join(whitespace);
+  }
+  return shortDescription;
+}
+
+/**
+ * Returns the Physical address with zip code or the latitude/ longitude
+ * of the campground
+ */
+function returnCampsitePhysicalAddress(address, coordinate) {
+  //checking the field is not null or empty.if yes we are displaying latLong value
+  if((typeof address == "undefined") || address.length == 0){
+    let latLongValArray = coordinate.replace("{lat:","").replace(", lng:",",").replace("}","").split(",");
+    return convertDMS(latLongValArray[0], latLongValArray[1]);
+  }
+  let addressToShow = "";
+  for (let j=0; j < address.length; j++){
+    let addressJson = address[j];
+    if(addressJson.type == "Physical") {
+       //making sure both the address lines are not empty
+      if((addressJson.line2 != "") || (addressJson.line1 != "")){
+        addressToShow += (addressJson.line2 != "") ? `${addressJson.line2},` : "";
+        addressToShow += (addressJson.line1 != "") ? `${addressJson.line1},` : "";
+        addressToShow += (addressJson.postalCode != "") ? `${addressJson.postalCode}` : "";
+      } else if(coordinate == ""){ //in case address lines as well as latLong is also empty
+        addressToShow =  defaultMessages.noPhysicalAddressAvailable; 
+      } else { //both address lines are empty but latLong is having value
+        let latLongValArray = coordinate.replace("{lat:","").replace(", lng:",",").replace("}","").split(",");
+        addressToShow = convertDMS(latLongValArray[0], latLongValArray[1]);
+      }
+      break;
+    }            
+  }
+  return addressToShow;
+}
+
+/**
+ * Method returns all Park Fee information in a single string
+ * to be displayed in the UI
+ */
+function returnParkFeeInfo(fee) {
+  if((typeof fee == "undefined") || fee.length == 0){
+    return defaultMessages.noFeesInfoAvailable;
+  }
+  let feeInfoToShow = "";
+  let feeInfo = {};
+  for (let i=0; i < fee.length; i++) {
+    feeInfo = fee[i];
+    feeInfoToShow += `${feeInfo.title} : $${feeInfo.cost}/night <br>`; 
+  }
+  return feeInfoToShow;
+}
+
+/**
+ * Method returns all the Operating Hours in a single String
+ * to be displayed in the UI
+ */
+function returnDisplayOperatingHours(hoursArray) {
+  if((typeof hoursArray == "undefined") || hoursArray.length == 0){
+    return defaultMessages.noHoursInfoAvailable;
+  }
+  let hours = hoursArray[0];
+  return Object.keys(hours.standardHours).map(key => ` ${key.substring(0,3).toUpperCase()} : ${hours.standardHours[key]}` );
+}
+
+/**
+ * Method returns all the Phone and Fax Numbers to show in the UI
+ * If no contact number is available, an appropriate message will be displayed.
+ */
+function returnTooltipPhoneNumber(contact) {
+  if((typeof contact == "undefined") || contact.length == 0){
+    return defaultMessages.noPhoneNumberAvailable;
+  }
+  let phoneNumbers = contact.phoneNumbers;
+  if((typeof phoneNumbers == "undefined") || phoneNumbers.length == 0){
+    return defaultMessages.noPhoneNumberAvailable;
+  }
+  let phoneNumberToShow = "";
+  for(let i=0; i < phoneNumbers.length; i++) {
+    phoneNumberToShow += `${phoneNumbers[i].type} : ${phoneNumbers[i].phoneNumber}  `;
+  }
+  return phoneNumberToShow;
+}
+
+/**
+ * Method returns the Phone Number to show in the UI
+ * If no phone number is available, an appropriate message will be displayed.
+ */
+function returnPhoneNumberToDisplay(contact) {
+  if((typeof contact == "undefined") || contact.length == 0){
+    return defaultMessages.noPhoneNumberAvailable;
+  }
+  let phoneNumbers = contact.phoneNumbers;
+  if((typeof phoneNumbers == "undefined") || phoneNumbers.length == 0){
+    return defaultMessages.noPhoneNumberAvailable;
+  }
+  let phoneNumberToShow = "";
+  for(let i=0; i < phoneNumbers.length; i++) {
+    if (phoneNumbers[i].type == "Voice") {
+      phoneNumberToShow = phoneNumbers[i].phoneNumber;
+      break;
+    }
+  }
+  if (phoneNumberToShow == "") {
+    phoneNumberToShow = defaultMessages.noPhoneNumberAvailable;
+  }
+  return phoneNumberToShow;
+}
+
+/**
+ * Method returns the email address to show in the UI
+ * If no email address is available, an appropriate message will be displayed.
+ */
+
+function returnEmailAddressToDisplay(contact) {
+  if((typeof contact == "undefined") || contact.length == 0){
+    return defaultMessages.noEmailAddressAvailable;
+  }
+  let emailAddresses = contact.emailAddresses;
+  if((typeof emailAddresses == "undefined") || emailAddresses.length == 0){
+    return defaultMessages.noEmailAddressAvailable;
+  }
+  let emailToSend = "";
+  for(let i=0; i < emailAddresses.length; i++) {
+     emailToSend = `${emailAddresses[i].emailAddress}`;
+     break;
+    }
+  
+  if (emailToSend == "") {
+    emailToSend = defaultMessages.noEmailAddressAvailable;
+  }
+  return emailToSend;
+
+}
 
 function displayResults(campInfoList) {
   toggleBootstrapStylesheet();
@@ -411,12 +482,6 @@ function displayResults(campInfoList) {
 // display in the UI
    for(let i=0; i < campInfoList.length; i++) {
     let campInfo = campInfoList[i];
-    /*$('#results-list').append(
-      `<li>
-      <h3>${campinfo.name}</a></h3>
-      <p>${campinfo.desc}</p>      
-      <p>${campinfo.photoReference}</p>        
-      </li>`*/
      
       $('#results-list').append(
       `
@@ -442,7 +507,7 @@ function displayResults(campInfoList) {
           <div class="camping-item-label">Booking Contacts</div>
            <span class="camping-item-value"><strong><i class="fa fa-phone" style="font-size:24px;color:blue" title="${campInfo.tooltipPhoneNumber()}"></i></strong>${campInfo.displayPhoneNumber()}</span>
            <br>
-          <span class="camping-item-value"><strong><i class="fa fa-envelope" style="font-size:20px;color:blue"></i></strong>value</span>
+          <span class="camping-item-value"><a href="mailto:${campInfo.displayEmailAddress()}"><strong><i class="fa fa-envelope" style="font-size:20px;color:blue"></i></strong></a></span>
       </div>
       <div class="px-3 my-3">
           <div class="camping-item-label">Other Information</div>
