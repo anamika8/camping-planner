@@ -301,6 +301,54 @@
   .container .camping-item .remove-item {
     right: -10px !important;
   }
+
+  .container.popup-overlay html{
+    width:100%;
+    color:#666666;
+    text-align:center;
+    font-size: 3px,
+  }
+  .container .popup-overlay{
+    /*Hides pop-up when there is no "active" class*/
+    visibility:hidden;
+    position:absolute;
+    background:#ffffff;
+    border:3px solid #666666;
+    width:50%;
+    height:70%;
+    left:25%; 
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .container .popup-overlay.active{
+    /*displays pop-up when "active" class is present*/
+    visibility:visible;
+    text-align:center;
+    z-index: 100;
+  }
+  
+  .container .popup-content {
+    /*Hides pop-up content when there is no "active" class */
+   visibility:hidden;
+  }
+  
+  .container .popup-content.active {
+    /*Shows pop-up content when "active" class is present */
+    visibility:visible;
+    color: #000;  
+    
+  }
+  .container .closer button{
+    display:inline-block;
+    vertical-align:middle;
+    border-radius:30px;
+    margin:.20rem;
+    font-size: 1rem;
+    color:#666666;
+    background:   #ffffff;
+    border:1px solid #666666; 
+  }
+
   @media (max-width: 991px) {
     .container .camping-item {
       padding-right: 30px;

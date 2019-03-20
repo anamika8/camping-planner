@@ -15,7 +15,8 @@ const defaultMessages = {
   noDescriptionAvailable : "No Campground description available",
   noPhysicalAddressAvailable : "No Physical Address for this Campground is available",
   noPhoneNumberAvailable : " MissingPhone Number",
-  noEmailAddressAvailable: "Not Available"
+  noEmailAddressAvailable: "Not Available",
+  noWeatherInformationAvailable : "No Weather information is available"
 };
 
 
@@ -152,10 +153,11 @@ let fetchCampAddress = function(campInfoList){
           
           for (let j=0; j < campAddress.length; j++){
             if(campAddress[j].type == "Physical") {
-              if((campAddress[j].line2 != "") && (campAddress[j].line2 != "")){
-                addressJson = campAddress[j];
-                //console.log(addressJson.line2 + ', ' + addressJson.line1);
+              addressJson = campAddress[j];
+              if((campAddress[j].line1 != "") && (campAddress[j].line2 != "")){
                 googleAddress = `${addressJson.line2}, ${addressJson.line1}, ${addressJson.postalCode}`;
+              } else if(campInfo.coordinate == '') {
+                googleAddress = `${campInfo.name}, ${addressJson.postalCode}`;
               } else {
                 googleAddress = `${campInfo.coordinate}`;
               }
@@ -190,6 +192,7 @@ let getPhotoReference = function(campInfoList){
         let photoReference = campAddress.split(" ").join("+");
          params = {
           query: photoReference,
+          type:'campground',
           key:(apiKeys.gMap)      
          };
     }
@@ -316,7 +319,12 @@ function createCampInfoObject(output) {
     //returns the email to display in UI
     displayEmailAddress : function() {
       return returnEmailAddressToDisplay(this.contact);
-    }
+    },
+    //returns the weather overview to be shown in the UI
+    weatherInPrecis : function(wordLength) {
+      return returnCampgroundWeather(this.weather, wordLength);
+     }
+    
   };
   return campInfo;
 }
@@ -341,6 +349,28 @@ function returnCampgroundShortDescription(desc, wordLength) {
   }
   return shortDescription;
 }
+
+function returnCampgroundWeather(weather, wordLength){
+  if(!weather || weather == '') {
+    return defaultMessages.noWeatherInformationAvailable;
+  }
+  let whitespace = " ";
+  let wordsArray = weather.split(whitespace);
+  let weatherInPrecis = '';
+  if (wordsArray.length <= wordLength) {
+    weatherInPrecis = weather;
+  } else {
+    let weatherInPrecisArray = [];
+    for (let i=0; i < wordLength; i++) {
+      weatherInPrecisArray.push(wordsArray[i]);
+    }
+    weatherInPrecisArray.push("...");
+    weatherInPrecis = weatherInPrecisArray.join(whitespace);
+  }
+  return weatherInPrecis;
+}
+
+
 
 /**
  * Returns the Physical address with zip code or the latitude/ longitude
@@ -374,7 +404,7 @@ function returnCampsitePhysicalAddress(address, coordinate) {
 }
 
 /**
- * Method returns all Park Fee information in a single string
+ * Method returns basic Park Fee information in a single string
  * to be displayed in the UI
  */
 function returnParkFeeInfo(fee) {
@@ -386,6 +416,7 @@ function returnParkFeeInfo(fee) {
   for (let i=0; i < fee.length; i++) {
     feeInfo = fee[i];
     feeInfoToShow += `${feeInfo.title} : $${feeInfo.cost}/night <br>`; 
+    break;
   }
   return feeInfoToShow;
 }
@@ -481,9 +512,23 @@ function displayResults(campInfoList) {
   $('#results-list').empty();
 // display in the UI
    for(let i=0; i < campInfoList.length; i++) {
-    let campInfo = campInfoList[i];
-     
-      $('#results-list').append(
+      let campInfo = campInfoList[i];
+      $('#results-list').append(generateHTMLData(campInfo,i));
+   };
+
+   //display the results section  
+  $('#results').removeClass('hidden');
+};
+
+function generateHTMLData(campInfo,i) {
+
+  const weatherPopUpVar = {
+    weatherAnchorId : `weather-${i}`,
+    popupBoxId : `weatherPopup-${i}`,
+    popupContent : `weatherContent-${i}`
+  };
+  
+  let returnHTML =
       `
       <div class="camping-item d-md-flex justify-content-between">
       <div class="px-3 my-3">
@@ -509,21 +554,54 @@ function displayResults(campInfoList) {
            <br>
           <span class="camping-item-value"><a href="mailto:${campInfo.displayEmailAddress()}"><strong><i class="fa fa-envelope" style="font-size:20px;color:blue"></i></strong></a></span>
       </div>
-      <div class="px-3 my-3">
-          <div class="camping-item-label">Other Information</div>
-          <span class="camping-item-value"><strong><i class="fa fa-cloud" style="font-size:20px;color:blue"></i> :</strong>value</span>
-          <br>
-          <span class="camping-item-value"><strong><i class="fa fa-info-circle" style="font-size:20px;color:red"></i> :</strong>value</span>
-      </div>
-  </div>
-`
- );
+      
+    <div class="px-3 my-3">
+        <div class="camping-item-label">Other Information</div>
+        
+        <span class="camping-item-value weatherPopupClass" id="${weatherPopUpVar.weatherAnchorId}"><strong><i class="fa fa-cloud" style="font-size:20px;color:blue"></i></strong></span>
+        <div class="popup-overlay" id="${weatherPopUpVar.popupBoxId}">
+          <div class="popup-content" id=${weatherPopUpVar.popupContent}>
+            <h5>Weather Overview</h5>
+            <p>${campInfo.weather}</p>
+            <button class="closer">Close</button>    
+            </div>
+        </div>
+        <span class="camping-item-value"><strong><i class="fa fa-info-circle" style="font-size:20px;color:red"></i> :</strong>value</span>
+    </div>
+    </div>`;
 
+    return returnHTML;
 }
+
+
+function handlePopUpWeather(){
+    //appends an "active" class to .popup and .popup-content when the "Open" button is clicked
+    $('.container').on('click','.weatherPopupClass', function(event) {
+      let anchorId = $(this).attr('id');
+      let index = anchorId.split('-')[1];
+      let targetPopupBoxId = `weatherPopup-${index}`;
+      let targetPopupContentId = `weatherContent-${index}`;
+      $(`#${targetPopupBoxId}`).addClass("active");
+      $(`#${targetPopupContentId}`).addClass("active");
+  });
   
- //display the results section  
-  $('#results').removeClass('hidden'); 
-};
+  //removes the "active" class to .popup and .popup-content when the "Close" button is clicked 
+  $(".container").on("click", '.closer', function(){
+    let anchorId = $(this).parent().attr('id');
+    let index = anchorId.split('-')[1];
+    let targetPopupBoxId = `weatherPopup-${index}`;
+    let targetPopupContentId = `weatherContent-${index}`;
+    $(`#${targetPopupBoxId}`).removeClass("active");
+    $(`#${targetPopupContentId}`).removeClass("active");
+  });
+
+  //removes the "active" class to .popup and .popup-content when the "Close" button is clicked 
+  $(".container").on("click", '.popup-overlay', function(){
+    let targetPopupBoxId = $(this).attr('id');
+    $(".popup-overlay, .popup-content").removeClass("active");
+    
+  });
+}
 
 function toggleBootstrapStylesheet(){
   if($('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled')) {
@@ -564,4 +642,5 @@ $(function handleCampingApp() {
     toggleBootstrapStylesheet();
     //$('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', true);
     handleSearch();
+    handlePopUpWeather();
 });
