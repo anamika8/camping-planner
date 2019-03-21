@@ -32,6 +32,7 @@
     font-size: 1.8em;
     text-shadow: 0 5px 5px black;
     text-align: center;
+    margin-top: 10%;
    
   }
 
@@ -78,30 +79,37 @@
     display: none;
   }
 
-  .loading-img {
-    display: none;
-    position: absolute;
-    top: 40%;
-    left: 45%;
-    margin-left: -(X/2)px;
-    margin-top: -(Y/2)px;
-  }
-
-  /*.display-section {
-    padding: 20px;
-    background: white;
-    font-size: 16px;
-    line-height: 25px;
-    font-weight: 300;
-    color: black;
-    padding-top: 10px;
-    overflow-wrap: break-word;
-    word-wrap: break-word; 
-  }*/
-
   div {
     display: block;
 }
 
+@media only screen and (max-width: 380px) {
 
+  h1 {
+    font-size: 2.5rem;
+    text-shadow: 0 4px 4px black;
+  }
 
+  h2 {
+    font-size: 1.5em;
+    text-shadow: 0 3px 3px black;
+    margin-top: 10%; 
+  }
+
+ 
+}
+
+@media only screen and (max-width: 1030px) and (min-width: 385px){
+
+  h1 {
+    font-size: 2.8rem;
+    text-shadow: 0 4px 4px black;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    text-shadow: 0 3px 3px black;
+  }
+  
+
+}

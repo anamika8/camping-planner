@@ -290,10 +290,9 @@
     color: #343b43;
     font-size: 16px;
     font-weight: bold;
+    cursor:default; 
   }
-  .container .camping-item .camping-item-list:hover .camping-item-list-title {
-    color: #ac32e4;
-  }
+ 
   .container .camping-item .desc {
     display: inline-block;
     width: 85px;
@@ -347,6 +346,10 @@
     color:#666666;
     background:   #ffffff;
     border:1px solid #666666; 
+  }
+
+  .container .weatherPopupClass, .container .informationPopUpClass {
+    cursor:pointer;
   }
 
   @media (max-width: 991px) {
