@@ -19,7 +19,8 @@ const defaultMessages = {
   noPhysicalAddressAvailable: "No Physical Address for this Campground is available",
   noPhoneNumberAvailable: " MissingPhone Number",
   noEmailAddressAvailable: "Not Available",
-  noWeatherInformationAvailable: "No Weather information is available"
+  noWeatherInformationAvailable: "No Weather information is available",
+  noDataAvailable: "No Campgrounds are Available"
 };
 
 /**
@@ -165,7 +166,7 @@ let populateCampingList = function (responseJson) {
       }
       resolve(campInfoList);
     } else {
-      reject(new Error("No Campgrounds are Available"));
+      reject(new Error(defaultMessages.noDataAvailable));
     }
 
   });
@@ -569,7 +570,7 @@ function returnHTMLForImageAndNameSection(campInfo) {
         <div class="camping-item-list-thumb"><img src="${campInfo.imageURL}" alt="list"></div>
         <div class="camping-item-list-info">
             <h4 class="camping-item-list-title">${campInfo.name}</h4>
-            <span><strong><i class="fa fa-home" style="font-size:24px;color:blue"></i>:</strong>${campInfo.displayAddress()}</span>
+            <span><strong><i class="fa fa-home" style="font-size:24px;color:blue;cursor:default"></i>:</strong>${campInfo.displayAddress()}</span>
             <span><strong>Operating Hours:</strong>${campInfo.displayOperatingHours()}</span>
         </div>
     </a>
