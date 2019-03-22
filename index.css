@@ -32,8 +32,8 @@
     font-size: 1.8em;
     text-shadow: 0 5px 5px black;
     text-align: center;
-    margin-top: 10%;
-   
+    margin-top: 6%;
+  
   }
 
   h2:hover {
@@ -55,7 +55,7 @@
   #js-form select {
     width: 12rem;
     height: 2rem;
-    margin-top: .5rem; 
+    margin-top: .8rem; 
    
   }
 
@@ -82,6 +82,36 @@
   div {
     display: block;
 }
+
+.ml9 {
+  position: relative;
+  font-weight: 500;
+  font-size: 2em;
+  margin: auto;
+  text-shadow: 0 7px 7px black;
+}
+
+.ml9 .text-wrapper {
+  position: relative;
+  display: inline-block;
+  padding-top: 0.2em;
+  padding-right: 0.05em;
+  padding-bottom: 0.1em;
+  overflow: hidden;
+}
+
+.ml9 .letter {
+  transform-origin: 50% 100%;
+  display: inline-block;
+  line-height: 1em;
+}
+
+.composition-wrapper{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
 
 @media only screen and (max-width: 380px) {
 
