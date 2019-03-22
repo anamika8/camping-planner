@@ -18,18 +18,18 @@ Fig-1 shows an user in the first page
 Lets consider that the user has searched for campgrounds under 'Oregon' state.
 Give the app a few seconds while it fetches the latest information and arranges them for you. You will be shown a campfire image in the meantime, indicating your data is being prepared.
 
-Fig-2 shows you an user waiting for data to appear
+Fig-2 shows an user waiting for data to appear
 ![Screenshot of waiting page](screenshots/pic_2.jpg "Page Loading")
 
 The campground information will be displayed in no time. When the search results page, appears you will see a listing of all the available campgrounds, and most of these listings are accompanied with an image that shows that campground or its nearby place to give you an idea of the location.
 The results page also contains the following information:
- -- Campground Name
- -- Campground Physical Address (either the full street address or the location co-ordinates, for your GPS)
- -- Campground Description (The description will be truncated, but full description is available on tooltip)
- -- Nightly Fees - the per night cost
- -- Booking Contacts - Phone Number and E-Mail Address for help in your booking
- -- Weather Overview - a brief weather overview
- -- Miscellaneous Information - the total number of campsites, tent-only sites, RV sites etc.
+ - Campground Name
+ - Campground Physical Address (either the full street address or the location co-ordinates, for your GPS)
+ - Campground Description (The description will be truncated, but full description is available on tooltip)
+ - Nightly Fees - the per night cost
+ - Booking Contacts - Phone Number and E-Mail Address for help in your booking
+ - Weather Overview - a brief weather overview
+ - Miscellaneous Information - the total number of campsites, tent-only sites, RV sites etc.
 
 Fig-3 shows an user's search results for the state of Oregon
 ![Screenshot of details page](screenshots/pic_3.jpg "Search Results")
