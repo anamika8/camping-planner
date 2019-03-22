@@ -73,8 +73,10 @@ function selectedFormdata() {
     })
     .then(function (campInfoList) {
       displayResults(campInfoList);
+    })
+    .catch(err => {
+      displayNoDataAvailable(err.message);
     });
-
 }
 
 /**
@@ -149,21 +151,25 @@ function isCampsiteEligible(dataValue) {
  */
 let populateCampingList = function (responseJson) {
   return new Promise(function (resolve, reject) {
-    let campInfoList = [];
-    // iterate through the items array
-    for (let i = 0; i < responseJson.data.length; i++) {
-      let output = responseJson.data[i];
-      if (isCampsiteEligible(output)) {
-        let campInfo = createCampInfoObject(output);
-        console.log(campInfo);
-        //push the results into output array    
-        campInfoList.push(campInfo);
+    if (responseJson.total > 0) {
+      let campInfoList = [];
+      // iterate through the items array
+      for (let i = 0; i < responseJson.data.length; i++) {
+        let output = responseJson.data[i];
+        if (isCampsiteEligible(output)) {
+          let campInfo = createCampInfoObject(output);
+          console.log(campInfo);
+          //push the results into output array    
+          campInfoList.push(campInfo);
+        }
       }
+      resolve(campInfoList);
+    } else {
+      reject(new Error("No campgrounds are avaialable"));
     }
-    resolve(campInfoList);
+
   });
 };
-
 
 /**
  * This method is used to fetch the address of the campgrounds.
@@ -726,6 +732,39 @@ function handlePopUpWeather() {
     $(".popup-overlay, .popup-content").removeClass("active");
 
   });
+}
+
+/**
+ * Return the HTML when no data is available.
+ */
+function returnHTMLforNoData(errorMessage) {
+  let htmlForNoData =
+    `
+  <div class="alert alert-info alert-dismissible fade show text-center mb-30"><strong>${errorMessage}</strong>
+  </div>
+  <hr class="my-2">
+  <div class="row pt-3 pb-5 mb-2">
+    <div class="col-sm-6 mb-3 resetPage"><a class="btn btn-style-1 btn-primary btn-block" href="#">Back</a>
+    </div>
+    <div class="col-sm-6 mb-3"><a class="btn btn-style-1 btn-primary btn-block"
+        href="https://www.nps.gov/index.htm"
+        title="This will redirect you the NPS Website for More Information">More Information</a>
+    </div>
+  </div>`;
+  return htmlForNoData;
+}
+
+/**
+ * Method used to display in the UI when no data available.
+ */
+function displayNoDataAvailable(errorMessage) {
+  let htmlForNoData = returnHTMLforNoData(errorMessage);
+
+  toggleBootstrapStylesheet();
+  $("body").css("background-color", "transparent");
+  changeBackgroundImage();
+  $('#no-results').html(htmlForNoData);
+  $('#no-results').removeClass('hidden');
 }
 
 /**
