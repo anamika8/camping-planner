@@ -348,6 +348,10 @@
     border:1px solid #666666; 
   }
 
+  .container .btn-primary:hover {
+    background-color: #00d800;
+  }
+
   .container .weatherPopupClass, .container .informationPopUpClass {
     cursor:pointer;
   }
