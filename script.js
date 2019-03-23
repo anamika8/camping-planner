@@ -23,6 +23,10 @@ const defaultMessages = {
   noDataAvailable: "No Campgrounds are Available"
 };
 
+const proxyurl = "https://cors-anywhere.herokuapp.com/";
+
+let stateNameSelected = "";
+
 /**
  * When user click on search button , it will changed the first page
  * and call the function to load data about campground details.
@@ -32,6 +36,20 @@ function handleSearch() {
     $('.js-container').addClass('hidden');
     showCampfireBurningGif();
     selectedFormdata();
+  });
+}
+
+/**
+ * Enables the search button only if state is selected
+ */
+function checkStateSelected() {
+  $('#search-state-list').on('change', function (event) {
+    let searchState = $(this).val();
+    if (searchState != "") {
+      $(".submission").removeClass("searchDisabled");
+      stateNameSelected = $(this).find('option:selected').attr("title");
+      console.log("State name selected: " + stateNameSelected);
+    }
   });
 }
 
@@ -107,7 +125,7 @@ let getCampingURL = function (query) {
     };
 
     const queryString = formatQueryParams(params)
-    const campURL = (hostURLs.camp) + '?' + queryString;
+    const campURL = proxyurl + (hostURLs.camp) + '?' + queryString;
     console.log(campURL);
     resolve(campURL);
 
@@ -257,7 +275,6 @@ let getPhotoReference = function (campInfoList) {
 let fetchImageReference = function (imageReferenceURL) {
   return new Promise(function (resolve, reject) {
     let photoReference = "";
-    const proxyurl = "https://cors.io/?";
     fetch(proxyurl + imageReferenceURL)
       .then(response => {
         if (response.ok) {
@@ -538,9 +555,19 @@ function displayResults(campInfoList) {
     $('#results-list').append(generateHTMLData(campInfo, i));
   };
 
+  setResultsPageHeaderInfo();
+
   //display the results section  
   $('#results').removeClass('hidden');
 };
+
+/**
+ * Sets the display page header information with state name
+ */
+function setResultsPageHeaderInfo() {
+  let newHTMLValues = `<strong>Available Campgrounds in ${stateNameSelected} state</strong>`;
+  $('#displayTitle').html(newHTMLValues);
+}
 
 /**
 * Collection of methods which is used to return data to display
@@ -619,7 +646,7 @@ function returnHTMLForBookingContactsSection(campInfo) {
           <div class="camping-item-label">Booking Contacts</div>
            <span class="camping-item-value"><strong><i class="fa fa-phone" style="font-size:24px;color:blue" title="${campInfo.tooltipPhoneNumber()}"></i></strong>${campInfo.displayPhoneNumber()}</span>
            <br>
-          <span class="camping-item-value"><a href="mailto:${campInfo.displayEmailAddress()}"><strong><i class="fa fa-envelope" style="font-size:20px;color:blue"></i></strong></a></span>
+          <span class="camping-item-value"><a href="mailto:${campInfo.displayEmailAddress()}" title="${campInfo.displayEmailAddress()}"><strong><i class="fa fa-envelope" style="font-size:20px;color:blue"></i></strong></a></span>
     </div>
     `;
   return returnHTML;
@@ -699,7 +726,6 @@ function handlePopUpInformation() {
   $(".container").on("click", '.popup-overlay', function () {
     let informationPopupBoxId = $(this).attr('id');
     $(".popup-overlay, .popup-content").removeClass("active");
-
   });
 }
 
@@ -848,6 +874,7 @@ function animatedText() {
 $(function handleCampingApp() {
   console.log('App loaded! Waiting for submit!');
   toggleBootstrapStylesheet();
+  checkStateSelected();
   handleSearch();
   handlePopUpWeather();
   handlePopUpInformation();

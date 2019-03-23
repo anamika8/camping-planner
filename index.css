@@ -59,6 +59,11 @@
     align-items: center;
   }
 
+  .searchDisabled {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   #js-form input{
     width: 9rem;
     height: 2rem;
