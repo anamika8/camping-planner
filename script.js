@@ -182,7 +182,11 @@ let populateCampingList = function (responseJson) {
           campInfoList.push(campInfo);
         }
       }
-      resolve(campInfoList);
+      if (campInfoList.length == 0) {
+        reject(new Error(defaultMessages.noDataAvailable));
+      } else {
+        resolve(campInfoList);
+      }
     } else {
       reject(new Error(defaultMessages.noDataAvailable));
     }
