@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="display.css">
 
@@ -32,7 +33,9 @@
         <form id="js-form">
             <div class="select-state">
                 <label class="js-search-state">
-                    <select name="js-search-state" id="search-state-list">
+                    <select name="js-search-state" id="search-state-list"
+                        onmousedown="if(this.options.length>10){this.size=10;}" onchange='this.size=0;'
+                        onblur="this.size=0;" style="position: relative; z-index: 1;">
 
                         <option value="" disabled selected>Select a State</option>
                         <option value="al">Alabama</option>
@@ -97,7 +100,9 @@
             <span class="label">State</span>
 
             <div class="submission">
-                <h2 class="search-button"> Search <i class="fa fa-search"></i></h2>
+                <h2 class="search-button"> Search <i class="fa fa-search" id="searchIcon"
+                        style="position: relative; z-index: 0;"></i>
+                </h2>
             </div>
         </form>
     </div>
