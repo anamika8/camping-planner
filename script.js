@@ -772,10 +772,10 @@ function displayNoDataAvailable(errorMessage) {
 * Method used to toggle the bootstrap library applied in HTML page
 */
 function toggleBootstrapStylesheet() {
-  if ($('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled')) {
-    $('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', false);
+  if ($('link[href="https://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled')) {
+    $('link[href="https://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', false);
   } else {
-    $('link[href="http://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', true);
+    $('link[href="https://netdna.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"]').prop('disabled', true);
   }
 }
 
