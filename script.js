@@ -125,7 +125,7 @@ let getCampingURL = function (query) {
     };
 
     const queryString = formatQueryParams(params)
-    const campURL = proxyurl + (hostURLs.camp) + '?' + queryString;
+    const campURL = (hostURLs.camp) + '?' + queryString;
     console.log(campURL);
     resolve(campURL);
 
@@ -154,7 +154,7 @@ let fetchCampInfo = function (campURL) {
  * to get proper camground information from NPS site
  */
 function isCampsiteEligible(dataValue) {
-  if ((dataValue.campsites.totalSites > 0)
+  if ((dataValue.campsites.totalsites > 0)
     && (dataValue.hasOwnProperty('addresses'))
     //checking the field is not null
     && (((dataValue['addresses']) && (dataValue['addresses'].length > 0))
@@ -354,7 +354,7 @@ function createCampInfoObject(output) {
     hours: output.operatingHours,
     address: output.addresses,
     coordinate: output.latLong,
-    weather: output.weatherOverview,
+    weather: output.weatheroverview,
     campsites: output.campsites,
     // returns a short description to be shown in the UI
     shortDescription: function (wordLength) {
@@ -689,11 +689,11 @@ function returnHTMLForOtherInfoSection(campInfo, i) {
       <div class="popup-overlay" id="${informationPopUpVar.popupBoxId}">
       <div class="popup-content" id=${informationPopUpVar.popupContent}>
         <h5>Informations</h5>
-        <p>Number of Total Sites available : ${campInfo.campsites.totalSites}</p>
-        <p>Number of Tents available : ${campInfo.campsites.tentOnly}</p>
-        <p>Number of Electrical Hookups : ${campInfo.campsites.electricalHookups}</p>
-        <p>Number of RV available : ${campInfo.campsites.rvOnly}</p>
-        <p>Number of Boat available : ${campInfo.campsites.walkBoatTo}</p>
+        <p>Number of Total Sites available : ${campInfo.campsites.totalsites}</p>
+        <p>Number of Tents available : ${campInfo.campsites.tentonly}</p>
+        <p>Number of Electrical Hookups : ${campInfo.campsites.electricalhookups}</p>
+        <p>Number of RV available : ${campInfo.campsites.rvonly}</p>
+        <p>Number of Boat available : ${campInfo.campsites.walkboatto}</p>
         <button class="closer">Close</button>    
         </div>
       </div>
