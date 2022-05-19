@@ -23,8 +23,7 @@ const defaultMessages = {
     noDataAvailable: "No Campgrounds are Available"
 };
 
-const proxyurl = "https://cors-anywhere.herokuapp.com/";
-
+const proxyurl = "https://floating-waters-21819.herokuapp.com/";
 let stateNameSelected = "";
 
 /**
@@ -314,7 +313,6 @@ function extractPhotoReference(responseJson) {
             photoReference = results.photos[0].photo_reference;
         }
     }
-    console.log("photo reference = " + photoReference);
     return photoReference;
 }
 
